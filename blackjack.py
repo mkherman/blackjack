@@ -173,6 +173,12 @@ elif dealer1 == 'A' and dealer2 in ['2','3','4','5','6']:
 
 elif dealer2 == 'A' and dealer1 in ['2','3','4','5','6']:
 	dealer2 = '1'
+	
+elif dealer1 == 'A' and dealer2 in ['8','9','10']:
+	dealer1 = '11'
+
+elif dealer2 == 'A' and dealer1 in ['8','9','10']:
+	dealer2 = '11'
 
 elif (dealer1 == 'A' and dealer2 in ['J','Q','K']) \
 	or (dealer2 == 'A' and dealer1 in ['J','Q','K']) :
