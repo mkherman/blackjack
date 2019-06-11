@@ -54,7 +54,7 @@ wins, losses, pushes = np.zeros(players), np.zeros(players), np.zeros(players)
 
 play_again = 'y'
 
-while play_again == 'y':
+while play_again != 'n':
 
 	# Set up deck
 	single_deck = range(2,10+1,1)*4 + ['A','J','Q','K']*4
@@ -237,7 +237,7 @@ while play_again == 'y':
 			print '\nPlayer {0} has {1}: You win!'.format(i+1, val)
 			wins[i] += 1
 
-		elif (dealer_total > val or val > 21) and dealer_total <= 21:
+		elif dealer_total > val and dealer_total <= 21 and val <=21:
 			print '\nPlayer {0} has {1}: Sorry, dealer wins!'.format(i+1, val)
 			losses[i] += 1
 
@@ -245,13 +245,13 @@ while play_again == 'y':
 			print '\nPlayer {0} has {1}: Push!'.format(i+1, val)
 			pushes[i] += 1
 
-		elif dealer_total > 21 and val > 21:
-			print '\nPlayer {0} has {1}: Sorry, you lost!'.format(i+1, val)
-			losses += 1
+		elif val > 21:
+			print '\nPlayer {0} has {1}: Sorry, you bust!'.format(i+1, val)
+			losses[i] += 1
 
-	scores = raw_input("\nPress enter to see player scores... ")
+	scores = raw_input("\n\nPress enter to see player scores... ")
 
-	print '\n\n-----------------------------------'
+	print '\n-----------------------------------'
 	for i, val in enumerate(wins):
 		print 'Player {0}: won {1}, lost {2}, pushed {3}'.format(i+1,int(wins[i]),int(losses[i]),int(pushes[i]))
 	print '-----------------------------------'
