@@ -213,9 +213,9 @@ while play_again != 'n':
 		if dealer_total > 21 and 11 in dealer_points:
 			ind = np.where((np.array(dealer_points)==11))
 			if len(ind) > 1:
-				points[ind[1:]] = 1
+				dealer_points[ind[1:]] = 1
 			else:
-				points[ind[0]] = 11
+				dealer_points[ind[0]] = 11
 			dealer_total = sum(dealer_points)
 
 
