@@ -63,24 +63,20 @@ while play_again != 'n':
 	np.random.shuffle(deck)
 	draw = 0
 
-
 	# Deal cards
 	players1 = deck[:players]
 	dealer1 = deck[players]
 	players2 = deck[players+1:players*2+1]
 	dealer2 = deck[players*2+1]
 
-
 	# Show half of dealer's hand
 	dealtcards(' ', dealer2, 'dealer')
-
 
 	# Show all players' hands
 	for i in range(players):
 
 		card1, card2 = players1[i], players2[i]
 		dealtcards(card1, card2, i)
-
 
 	# Ask if hit or stand
 	player_hands = []
@@ -89,29 +85,25 @@ while play_again != 'n':
 	for i in range(players):
 
 		hand = [players1[i], players2[i]]
-
-		aces = [0,0]
-		if hand[0] == 'A': 
-			aces[0] = int(raw_input('\n\nPlayer {0}, would you like your 1st card to be 1 or 11?\n--->  '.format(i+1)))
-		if hand[1] == 'A':
-			aces[1] = int(raw_input('\n\nPlayer {0}, would you like your 2nd card to be 1 or 11?\n--->  '.format(i+1)))
-
-		total = 0
+		points = []
 		numcards = 2
 		
-		# Check for blackjack or bust
-		for idx,j in enumerate(hand):
-			try: 
-				total += int(j)
-			except:
-				if j > 10 and aces[idx] == 0:
-					total += 10
-				else:
-					total += aces[idx]
+		# Define points
+		for card in hand:
 
+			if card in ['J', 'Q', 'K']:
+				card = '10' 
+			elif card == 'A':
+				card = '11'
+			points.append(int(card))
+
+		total = sum(points)
+
+		# Lower value of first ace if two aces drawn
 		if total > 21:
-			print '\nBust, {0}!'.format(total)
-			decision = None
+			points[0] = 1
+			total = sum(points)
+			decision = raw_input('\n\nPlayer {0}, would you like to hit or stand?\n--->  '.format(i+1))
 
 		elif total == 21:
 			print '\nNice, {0}!'.format(total)
@@ -133,21 +125,26 @@ while play_again != 'n':
 			hand.append(newcard)
 			numcards += 1
 
-			points = []
-			for j in range(len(hand)):
-				try:
-					points.append(int(hand[j]))
-				except:
-					if hand[j]== 'A' and j < 2:
-						card = aces[j]
-					elif hand[j] == 'A' and j == 2:
-						card = int(raw_input('\n\nPlayer {0}, would you like this A to be 1 or 11?\n--->  '.format(i+1)))
-					else:
-						card = 10
-					points.append(card)
+			if newcard in ['J', 'Q', 'K']:
+				points.append(10)
+			elif newcard == 'A' and total <= 10:
+				points.append(11)
+			elif newcard == 'A' and total > 10:
+				points.append(1)
+			else: 
+				points.append(int(newcard))
 
+			# Reassign ace if total points exceed 21
 			total = sum(points)
+			if total > 21 and 11 in points:
+				ind = np.where((np.array(points)==11))
+				if len(ind) > 1:
+					points[ind[1:]] = 1
+				else:
+					points[ind[0]] = 11
+				total = sum(points)
 
+			# Check total points
 			if total > 21:
 				print '\nBust, {0}!'.format(total)
 				decision = None
@@ -170,61 +167,56 @@ while play_again != 'n':
 	showcards = raw_input("\nPress enter to see dealer's cards... ")
 
 	dealtcards(dealer1, dealer2, 'dealer')
-	if dealer1 == 'A' and dealer2 =='A':
-		dealer1 = '1'
-		dealer2 = '11'
-
-	elif dealer1 == 'A' and dealer2 in ['2','3','4','5','6']:
-		dealer1 = '1'
-
-	elif dealer2 == 'A' and dealer1 in ['2','3','4','5','6']:
-		dealer2 = '1'
-
-	elif dealer1 == 'A' and dealer2 in ['8','9','10']:
-		dealer1 = '11'
-
-	elif dealer2 == 'A' and dealer1 in ['8','9','10']:
-		dealer2 = '11'
-
-	elif (dealer1 == 'A' and dealer2 in ['J','Q','K']) \
-		or (dealer2 == 'A' and dealer1 in ['J','Q','K']) :
-		dealer1, dealer2 = '11', '10'
-
-
 	dealer_hand = [dealer1, dealer2]
 	dealer_total = 0
-
-	# Check for blackjack or bust
-	for idx,j in enumerate(dealer_hand):
-		try: 
-			dealer_total += int(j)
-		except:
-			dealer_total += 10
-
-
+	dealer_points = []
 	dealer_numcards = 2
 
-	while dealer_total < 17  and dealer_numcards < 5:
+	# Define points
+	for card in dealer_hand:
 
-		if draw > 0:
-			for c in range(dealer_numcards-2):
-				lastcard = hitme(draw-(dealer_numcards-2)+(c+1),i)
+		if card in ['J', 'Q', 'K']:
+			card = '10' 
+		elif card == 'A' and '6' not in dealer_hand:
+			card = '11'
+		elif card == 'A' and '6' in dealer_hand:
+			card = '1'
+		dealer_points.append(int(card))
+
+	dealer_total = sum(dealer_points)
+
+	# Lower value of first ace if two aces drawn
+	if dealer_total > 21:
+		dealer_points[0] = 1
+		dealer_total = sum(dealer_points)
+
+	# Dealer draws another card 
+	while dealer_total < 17  and dealer_numcards < 5:
 
 		draw += 1
 		newcard = hitme(draw,i)
 		dealer_hand.append(newcard)
-		numcards += 1
+		dealer_numcards += 1
 
-		try:
-			dealer_total += int(newcard)
-		except:
-			if newcard == 'A' and dealer_total <= 10:
-				dealer_total += 11
-			elif newcard == 'A' and dealer_total > 10:
-				dealer_total += 1
+		if newcard in ['J', 'Q', 'K']:
+			dealer_points.append(10)
+		elif newcard == 'A' and dealer_total <= 10:
+			dealer_points.append(11)
+		elif newcard == 'A' and dealer_total > 10:
+			dealer_points.append(1)
+		else: 
+			dealer_points.append(int(newcard))
+
+		dealer_total = sum(dealer_points)
+
+		# Reassign ace if total points exceed 21
+		if dealer_total > 21 and 11 in dealer_points:
+			ind = np.where((np.array(dealer_points)==11))
+			if len(ind) > 1:
+				points[ind[1:]] = 1
 			else:
-				dealer_total += 10
-
+				points[ind[0]] = 11
+			dealer_total = sum(dealer_points)
 
 
 
