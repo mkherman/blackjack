@@ -137,7 +137,7 @@ while play_again != 'n':
 			# Reassign ace if total points exceed 21
 			total = sum(points)
 			if total > 21 and 11 in points:
-				ind = np.where((np.array(points)==11))
+				ind = np.where((np.array(points)==11))[0]
 				if len(ind) > 1:
 					points[ind[1:]] = 1
 				else:
@@ -211,7 +211,7 @@ while play_again != 'n':
 
 		# Reassign ace if total points exceed 21
 		if dealer_total > 21 and 11 in dealer_points:
-			ind = np.where((np.array(dealer_points)==11))
+			ind = np.where((np.array(dealer_points)==11))[0]
 			if len(ind) > 1:
 				dealer_points[ind[1:]] = 1
 			else:
