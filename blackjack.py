@@ -61,6 +61,7 @@ while play_again != 'n':
 	#faces = {'A':1, 'J':10, 'Q':10, 'K':10}
 	deck = np.hstack(single_deck*2)
 	np.random.shuffle(deck)
+
 	draw = 0
 
 	# Deal cards
@@ -113,7 +114,7 @@ while play_again != 'n':
 			decision = raw_input('\n\nPlayer {0}, would you like to hit or stand?\n--->  '.format(i+1))
 
 		# Draw another card
-		while decision == 'hit':
+		while decision in ['h', 'hit']:
 			dealtcards(hand[0], hand[1], i)
 
 			if draw > 0:
@@ -209,7 +210,7 @@ while play_again != 'n':
 
 		dealer_total = sum(dealer_points)
 
-		# Reassign ace if total points exceed 21
+		# Reassign ace if total points exceed 21 or if other cards add to 7+
 		if dealer_total > 21 and 11 in dealer_points:
 			ind = np.where((np.array(dealer_points)==11))[0]
 			if len(ind) < 2:
@@ -217,7 +218,11 @@ while play_again != 'n':
 			else:
 				dealer_points[ind[1:]] = 1
 			dealer_total = sum(dealer_points)
-
+			
+		elif dealer_total <= 10 and 1 in dealer_points:
+			ind = np.where((np.array(dealer_points)==1))[0]
+			dealer_points[ind[0]] = 11
+			dealer_total = sum(dealer_points)			
 
 
 	print '\n\nDealer has {0}'.format(dealer_total)
